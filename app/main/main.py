@@ -6,10 +6,17 @@
 @file: main.py
 @Desc
 """
+import os
+import sys
 from logging import INFO
 
 import uvicorn as uvicorn
 from fastapi import FastAPI
+
+path = os.getcwd()
+work_path = path.split('/main')[0]
+sys.path.append(work_path)
+sys.path.append(work_path + '/main')
 
 from app.routers.regis import regis
 from app.routers.restaurant import restaurants
