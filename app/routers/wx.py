@@ -3,15 +3,15 @@
 """
 @author: yintian
 @date: 2021-07-30
-@file: regis.py
+@file: wx.py
 @Desc
 """
 from fastapi import APIRouter
 
 from Data.RegisData import isWxRegisData
-from component.regis import get_login_openid, is_wx_regis
+from component.wx import get_login_openid, is_wx_regis
 
-regis = APIRouter(
+wx = APIRouter(
     prefix="/wx",
     tags=["wx"],
     # dependencies=[Depends(get_token_header)],
@@ -19,14 +19,14 @@ regis = APIRouter(
 )
 
 
-@regis.post('/getOpenId')
+@wx.post('/getOpenId')
 async def _(params: dict):
     result = await get_login_openid(params)
     return result
 
 
-@regis.post('/isWxRegis')
-async def _(data: isWxRegisData):
+@wx.post('/isWxRegis')
+async def is_wx_regis_(data: isWxRegisData):
     result = is_wx_regis(data.user_id)
     return result
 

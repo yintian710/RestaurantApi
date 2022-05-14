@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@File  : regis.py
+@File  : wx.py
 @Author: yintian
 @Date  : 2021/5/14 14:27
 @Desc  : 
