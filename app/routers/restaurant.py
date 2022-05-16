@@ -3,15 +3,16 @@
 """
 @author: yintian
 @date: 2021-07-26
-@file: restaurant.py
+@file: restaurant_.py
 @Desc
 """
 from fastapi import APIRouter
 
-from Data.RestaurantData import RestaurantData
+from Data.RestaurantData import NewRestaurantData, NewFoodsData, OneData, RestaurantNameData
 from Data.userData import UserData
-from component.restaurant import get_user_restaurant, next_restaurant, go_restaurant, add_restaurants, change_user_this, \
-    change_user_restaurant_name, get_user_all_restaurant_data, get_user_this, get_did
+from component.restaurant import new_restaurant, get_one_restaurant, \
+    get_all_restaurants, new_foods, change_this, change_restaurant_name, get_this, next_food, go_food, get_history, \
+    get_ten_history
 
 restaurants = APIRouter(
     prefix="/restaurants",
@@ -21,70 +22,69 @@ restaurants = APIRouter(
 )
 
 
-@restaurants.post('/getRestaurants')
-async def _(data: UserData):
-    user_id = data.user_id
-    result = get_user_restaurant(user_id)
+@restaurants.post('/newRestaurant')
+async def new_restaurant_(data: NewRestaurantData):
+    result = new_restaurant(data)
     return result
 
 
-@restaurants.post('/next')
-async def _(data: UserData):
-    user_id = data.user_id
-    result = next_restaurant(user_id)
+@restaurants.post('/newFoods')
+async def new_foods_(data: NewFoodsData):
+    result = new_foods(data)
+    return result
+
+
+@restaurants.post('/getOneRestaurant')
+async def get_one_restaurant_(data: OneData):
+    result = get_one_restaurant(data)
     return result
 
 
 @restaurants.post('/all')
-async def _(data: UserData):
-    user_id = data.user_id
-    result = get_user_all_restaurant_data(user_id)
-    return result
-
-
-@restaurants.post('/go')
-async def _(data: UserData):
-    user_id = data.user_id
-    result = go_restaurant(user_id)
-    return result
-
-
-@restaurants.post('/add')
-async def _(data: RestaurantData):
-    result = add_restaurants(data.user_id, data.add_str)
+async def all_(data: UserData):
+    result = get_all_restaurants(data)
     return result
 
 
 @restaurants.post('/changeThis')
-async def _(data: RestaurantData):
-    result = change_user_this(data.user_id, data.new_this_num)
-    return result
-
-
-@restaurants.post('/changeRestaurantName')
-async def _(data: RestaurantData):
-    result = change_user_restaurant_name(data.user_id, data.new_restaurant_name)
-    return result
-
-
-@restaurants.post('/go')
-async def _(data: UserData):
-    user_id = data.user_id
-    result = go_restaurant(user_id)
+async def change_this_(data: OneData):
+    result = change_this(data)
     return result
 
 
 @restaurants.post('/this')
-async def _(data: UserData):
-    user_id = data.user_id
-    result = get_user_this(user_id)
+async def this_(data: UserData):
+    result = get_this(data)
+    return result
+
+
+@restaurants.post('/changeRestaurantName')
+async def change_restaurant_name_(data: RestaurantNameData):
+    result = change_restaurant_name(data)
+    return result
+
+
+@restaurants.post('/next')
+async def next_(data: UserData):
+    result = next_food(data)
+    return result
+
+
+@restaurants.post('/go')
+async def go_(data: UserData):
+    result = go_food(data)
     return result
 
 
 @restaurants.post('/getHistory')
-async def _(data: UserData):
-    user_id = data.user_id
-    result = get_did(user_id)
+async def get_history_(data: UserData):
+    result = get_history(data)
+    return result
+
+
+@restaurants.post('/getTenHistory')
+async def get_ten_history_(data: UserData):
+    result = get_ten_history(data)
     return result
 
 

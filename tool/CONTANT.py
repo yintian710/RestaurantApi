@@ -6,7 +6,7 @@
 @Desc  : 各种常量
 """
 import os
-from sql.model import U, Wx, Restaurant
+from sql.model import Wx, Restaurant, History, UserInfo, Food
 
 PA = '爬'
 
@@ -38,18 +38,13 @@ SSL_KEY_PATH = BOT_PATH + r'\ignore\wx.key'
 
 SSL_PEM_PATH = BOT_PATH + r'\ignore\wx.pem'
 
-IMG_PATH = {
-    'N': BOT_PATH + r'\json_data\N.json',
-    'R': BOT_PATH + r'\json_data\R.json',
-    'SR': BOT_PATH + r'\json_data\SR.json',
-    'SSR': BOT_PATH + r'\json_data\SSR.json',
-    'UR': BOT_PATH + r'\json_data\UR.json',
-}
 
 SQL_DICT = {
-    'u': U,
     'wx': Wx,
     'restaurant': Restaurant,
+    'history': History,
+    'user_info': UserInfo,
+    'food': Food
 }
 
 GO_WEIGHT = 5

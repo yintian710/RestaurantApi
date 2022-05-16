@@ -20,7 +20,7 @@ wx = APIRouter(
 
 
 @wx.post('/getOpenId')
-async def _(params: dict):
+async def get_open_id_(params: dict):
     result = await get_login_openid(params)
     return result
 

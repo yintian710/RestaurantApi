@@ -7,7 +7,7 @@
 @Desc
 """
 
-from sqlalchemy import Column, BIGINT, INT, VARCHAR, DATETIME, TEXT
+from sqlalchemy import Column, BIGINT, INT, VARCHAR, DATETIME, TEXT, BOOLEAN
 from sqlalchemy.orm import DeclarativeMeta, registry
 
 from sql.config import Base
@@ -26,25 +26,10 @@ class dBase:
             return attr
         return tuple(getattr(self, _) for _ in args)
 
-
-class U(Base, dBase):
-    __tablename__ = 'U'
-
-    id = Column(BIGINT, primary_key=True, default=0)
-    score = Column(INT, default=0)
-    da = Column(VARCHAR(255), default=0)
-    UR = Column(INT, default=0)
-    SSR = Column(INT, default=0)
-    SR = Column(INT, default=0)
-    R = Column(INT, default=0)
-    N = Column(INT, default=0)
-    estate = Column(INT, default=0)
-    rent = Column(INT, default=0)
-    rent_time = Column(DATETIME, default='0000-00-00 00:00:00')
-    investment = Column(INT, default=0)
-    money = Column(INT, default=0)
-    achievement = Column(TEXT)
-    permission = Column(VARCHAR(255), default='user')
+    def __init__(self, **kwargs):
+        if kwargs:
+            for k, v in kwargs.items():
+                setattr(self, k, v)
 
 
 class Wx(Base, dBase, Map):
@@ -52,28 +37,51 @@ class Wx(Base, dBase, Map):
 
     id = Column(BIGINT, primary_key=True, autoincrement=True)
     user_id = Column(VARCHAR(255), primary_key=True)
-    code = Column(VARCHAR(255))
+    last_time = Column(BIGINT)
+
+
+class UserInfo(Base, dBase, Map):
+    __tablename__ = 'user_info'
+    id = Column(BIGINT, primary_key=True, autoincrement=True)
+    user_id = Column(VARCHAR(255), primary_key=True)
+    name = Column(TEXT)
+    this = Column(BIGINT)
+    go = Column(BIGINT)
+    permission = Column(VARCHAR(255))
+    last_time = Column(BIGINT)
 
 
 class Restaurant(Base, dBase, Map):
     __tablename__ = 'restaurant'
 
     id = Column(BIGINT, primary_key=True, autoincrement=True)
-    user_id = Column(VARCHAR(255), primary_key=True)
-    go = Column(VARCHAR(40))
-    this = Column(VARCHAR(40))
-    did = Column(TEXT)
-    restaurant1 = Column(TEXT)
-    restaurant2 = Column(TEXT)
-    restaurant3 = Column(TEXT)
-    restaurant4 = Column(TEXT)
-    restaurant5 = Column(TEXT)
-    restaurant6 = Column(TEXT)
-    restaurant7 = Column(TEXT)
-    restaurant8 = Column(TEXT)
-    restaurant9 = Column(TEXT)
-    active = Column(BIGINT)
-    cache = Column(TEXT)
+    user_id = Column(VARCHAR(255))
+    name = Column(TEXT)
+    last_time = Column(BIGINT)
+    active = Column(BOOLEAN)
+
+
+class Food(Base, dBase, Map):
+    __tablename__ = 'food'
+
+    id = Column(BIGINT, primary_key=True, autoincrement=True)
+    user_id = Column(VARCHAR(255))
+    restaurant_id = Column(BIGINT)
+    weight = Column(BIGINT)
+    name = Column(TEXT)
+    address = Column(TEXT)
+    active = Column(BOOLEAN)
+    last_time = Column(BIGINT)
+
+
+class History(Base, dBase, Map):
+    __tablename__ = 'history'
+    id = Column(BIGINT, primary_key=True, autoincrement=True)
+    user_id = Column(VARCHAR(255))
+    restaurant_id = Column(BIGINT)
+    food = Column(TEXT)
+    food_id = Column(BIGINT)
+    last_time = Column(BIGINT)
 
 
 if __name__ == '__main__':

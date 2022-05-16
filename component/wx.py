@@ -36,7 +36,7 @@ async def get_login_openid(data):
 
 
 def regis(openid):
-    bases = ['wx', 'restaurant']
+    bases = ['wx', 'user_info']
     for base in bases:
         res = select_base(base, openid, 'user_id')
         if not res:
@@ -53,14 +53,6 @@ def is_wx_regis(openid):
     res = select_id_in_wx(openid)
     if not res:
         regis(openid)
-        restaurant_dict = {
-            f'restaurant{i}': '{"name": "restaurant' + str(i)
-                              + '","last_time": 1623429566,"food": '
-                                '{"米饭": {"name": "米饭","weight": 100}}}'
-            for i in range(1, 10)
-        }
-        restaurant_dict['this'] = 'restaurant1'
-        update_restaurant(openid, restaurant_dict)
         return get_return('注册成功')
     return get_return('已注册')
 

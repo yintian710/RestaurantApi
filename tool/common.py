@@ -7,12 +7,12 @@
 """
 import re
 
-from sql.employ import select_u, select_wx
+from sql.employ import select_wx, select_user_info
 from tool.CONTANT import pa
 from tool.util.Result import Result
 
 
-def get_return(msg, need=None, code=0):
+def get_return(msg, need=None, code=0, **kwargs):
     """
     获取一个符合flask返回格式的dict
     :param need: 需要额外发送的数据
@@ -22,6 +22,8 @@ def get_return(msg, need=None, code=0):
     """
     if need is None:
         need = {}
+    if kwargs:
+        need.update(kwargs)
     res = Result(message=msg, code=code, need=need)
     return res
 
@@ -42,7 +44,11 @@ def is_regis(func):
         :param kwargs:
         :return:
         """
-        if not select_wx(user_id, 'user_id'):
+        if isinstance(user_id, str):
+            key = user_id
+        else:
+            key = user_id.user_id
+        if not select_wx(key, 'user_id'):
             return get_return('您还没有注册，请先注册', code=1)
         return func(user_id, *args, **kwargs)
 
@@ -64,7 +70,7 @@ def is_admin(func):
         :param kwargs:
         :return:
         """
-        permission = select_u(user_id, 'permission')
+        permission = select_user_info(user_id, 'permission')
         if not permission or permission != ('admin',):
             return pa
         return func(user_id, *args, **kwargs)
@@ -93,11 +99,15 @@ def str_to_python_code(_str1):
         return e
 
 
-def get_random_value_dict_for_dict_weight(dic: dict, value: str, weight: str):
+def get_random_value_dict_for_dict_weight(list1: list, value: str, weight: str, ignore=None):
     res_dict = {'value': [], 'weight': []}
-    for k, v in dic.items():
-        res_dict['value'].append(v[value])
-        res_dict['weight'].append(v[weight])
+    for _ in list1:
+        k = _[value]
+        if ignore and k == ignore:
+            continue
+        v = _[weight]
+        res_dict['value'].append(k)
+        res_dict['weight'].append(v)
     return res_dict
 
 

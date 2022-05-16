@@ -6,66 +6,141 @@
 @file: employ.py
 @Desc
 """
+from time import time
+
 from app.dependencies import get_db
+from sql.model import Food, Restaurant, History
 from tool.CONTANT import SQL_DICT
 
 
-def select_u(user_id, *args):
+def select_history(user_id, *args):
     """
-    查询"u"表中的数据,调用select_base接口
+    查询"history"表中的数据,调用select_base接口
     :param user_id: 被查询的用户id
     :param args: 所有被查询的字段名
     :return:
     """
-    return select_base('u', user_id, *args)
+    db = get_db()
+    base = History
+    res = db.query(base).filter(base.user_id == user_id)
+    if not res:
+        return None
+    result = [_.get(*args) for _ in res]
+    db.close()
+    return result
 
 
-def update_u(user_id, kwargs):
-    """
-    更新"u"表中的数据,调用update_base接口
-    :param user_id:
-    :param kwargs: 需要更改的数据dict,{需要更改的字段名:更改之后的值,...}
-    :return:
-    """
-    update_base('u', user_id, **kwargs)
-
-
-def insert_u(user_id):
+def insert_history(user_id, restaurant_id, food, food_id):
     """
     注册u表
+    :param food_id:
+    :param food:
+    :param restaurant_id:
     :param user_id:
     :return:
     """
-    insert_base('u', user_id)
+    db = get_db()
+    base = History()
+    base.user_id = user_id
+    base.restaurant_id = restaurant_id
+    base.last_time = int(time())
+    base.food = food
+    base.food_id = food_id
+    db.add(base)
+    db.commit()
 
 
-def select_restaurant(user_id, *args):
+def select_restaurant(user_id, *args, **kwargs):
     """
     查询"restaurant"表中的数据,调用select_base接口
     :param user_id: 被查询的用户id
     :param args: 所有被查询的字段名
     :return:
     """
-    return select_base('restaurant', user_id, *args)
+    db = get_db()
+    base = Restaurant
+    res = db.query(base).filter(base.user_id == user_id)
+    if 'restaurant_id' in kwargs:
+        res = res.filter(base.id == kwargs['restaurant_id'])
+    if 'active' in kwargs:
+        res = res.filter(base.active == kwargs['active'])
+    if not res:
+        return None
+    result = [_.get(*args) for _ in res]
+    db.close()
+    return result
 
 
-def update_restaurant(user_id, kwargs):
+def update_restaurant(user_id, restaurant_id, **kwargs):
     """
     更新"restaurant"表中的数据,调用update_base接口
+    :param restaurant_id:
     :param user_id:
     :param kwargs: 需要更改的数据dict,{需要更改的字段名:更改之后的值,...}
     :return:
     """
-    update_base('restaurant', user_id, **kwargs)
+    db = get_db()
+    base = Restaurant
+    kwargs['last_time'] = time()
+    db.query(base).filter(base.id == restaurant_id).filter(base.user_id == user_id).update(kwargs)
+    db.commit()
+    db.close()
 
 
-def insert_restaurant(user_id):
+def insert_restaurant(user_id, restaurant_name, **kwargs):
     """
     注册eat表
+    :param restaurant_name:
     :param user_id:
     :return:
     """
-    insert_base('restaurant', user_id)
+    db = get_db()
+    base = Restaurant(**kwargs)
+    base.user_id = user_id
+    base.name = restaurant_name
+    base.last_time = int(time())
+    base.active = True
+    db.add(base)
+    db.commit()
+    return base.id
+
+
+def select_restaurant_foods(restaurant_id, *args, **kwargs):
+    """
+    查询"food"表中的数据,调用select_base接口
+    :param restaurant_id:
+    :param args: 所有被查询的字段名
+    :return:
+    """
+    db = get_db()
+    base = Food
+    res = db.query(base).filter(base.restaurant_id == restaurant_id)
+    if 'active' in kwargs:
+        res = res.filter(base.active == kwargs['active'])
+    if not res:
+        return None
+    result = [_.get(*args) for _ in res]
+    db.close()
+    return result
+
+
+def select_user_foods(user_id, *args, **kwargs):
+    """
+    查询"food"表中的数据,调用select_base接口
+    :param user_id:
+    :param args: 所有被查询的字段名
+    :return:
+    """
+    db = get_db()
+    base = Food
+    res = db.query(base).filter(base.user_id == user_id)
+    if 'active' in kwargs:
+        res = res.filter(base.active == kwargs['active'])
+    if not res:
+        return None
+    result = [_.get(*args) for _ in res]
+    db.close()
+    return result
 
 
 def select_wx(user_id, *args):
@@ -97,91 +172,90 @@ def insert_wx(user_id):
     insert_base('wx', user_id)
 
 
-def select_card(user_id, *args):
+def select_user_info(user_id, *args):
     """
-    查询"card"表中的数据,调用select_base接口
+    查询"user_info"表中的数据,调用select_base接口
     :param user_id: 被查询的用户id
     :param args: 所有被查询的字段名
     :return:
     """
-    return select_base('card', user_id, *args)
+    return select_base('user_info', user_id, *args)
 
 
-def update_card(where_dict, kwargs):
+def update_user_info(user_id, **kwargs):
     """
-    更新"card"表中的数据,调用update_base接口
-    :param where_dict: 查询条件dict,{字段名：值}
-    :param kwargs: 需要更改的数据dict,{需要更改的字段名:更改之后的值,...}
-    :return:
-    """
-    update_base('card', where_dict, **kwargs)
-
-
-def insert_card(user_id):
-    """
-    注册card表
-    :param user_id:
-    :return:
-    """
-    insert_base('card', user_id)
-
-
-def select_game(user_id, *args):
-    """
-    查询"game"表中的数据,调用select_base接口
-    :param user_id: 被查询的用户id
-    :param args: 所有被查询的字段名
-    :return:
-    """
-    return select_base('game', user_id, *args)
-
-
-def update_game(user_id, kwargs):
-    """
-    更新"game"表中的数据,调用update_base接口
+    更新"user_info"表中的数据,调用update_base接口
     :param user_id:
     :param kwargs: 需要更改的数据dict,{需要更改的字段名:更改之后的值,...}
     :return:
     """
-    update_base('game', user_id, **kwargs)
+    kwargs['last_time'] = time()
+    update_base('user_info', user_id, **kwargs)
 
 
-def insert_game(user_id):
+def insert_user_info(user_id):
     """
     插入游戏用户信息
     :param user_id:
     :return:
     """
-    insert_base('game', user_id)
+    insert_base('user_info', user_id)
 
 
-def select_bank(user_id, *args):
+def select_food(food_id, *args):
     """
-    查询"bank"表中的数据,调用select_base接口
-    :param user_id: 被查询的用户id
+    查询"food"表中的数据,调用select_base接口
+    :param food_id:
     :param args: 所有被查询的字段名
     :return:
     """
-    return select_base('bank', user_id, *args, )
+    db = get_db()
+    base = Food
+    res = db.query(base).filter(base.id == food_id).first()
+    if not res:
+        return None
+    result = res.get(*args)
+    db.close()
+    return result
 
 
-def update_bank(user_id, kwargs):
+def update_food(user_id, food_id, **kwargs):
     """
-    更新"bank"表中的数据,调用update_base接口
+    更新"food"表中的数据,调用update_base接口
+    :param food_id:
     :param user_id:
     :param kwargs: 需要更改的数据dict,{需要更改的字段名:更改之后的值,...}
     :return:
     """
-    update_base('bank', user_id, **kwargs)
+    db = get_db()
+    base = Food
+    kwargs['last_time'] = time()
+    db.query(base).filter(base.id == food_id).filter(base.user_id == user_id).update(kwargs)
+    db.commit()
+    db.close()
 
 
-def insert_bank(user_id):
+def insert_food(user_id, food, restaurant_id, address=''):
     """
-    注册bank表信息
+    注册food表信息
+    :param restaurant_id:
+    :param address:
+    :param food:
     :param user_id:
     :return:
     """
-    insert_base('bank', user_id)
+    db = get_db()
+    base = Food()
+    base.user_id = user_id
+    base.name = food
+    base.restaurant_id = restaurant_id
+    base.address = address
+    base.weight = 100
+    base.last_time = int(time())
+    base.active = True
+    db.add(base)
+    db.commit()
+    return base.id
 
 
 def select_id_in_wx(openid):
