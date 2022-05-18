@@ -20,10 +20,14 @@ sys.path.append(work_path + '/main')
 
 from app.routers.wx import wx
 from app.routers.restaurant import restaurants
+from app.routers.history import history
+from app.routers.market import market
 
 app = FastAPI(docs_url='/yintian')
 app.include_router(restaurants)
 app.include_router(wx)
+app.include_router(history)
+app.include_router(market)
 
 
 @app.get("/")

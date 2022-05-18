@@ -6,7 +6,7 @@
 @Desc  : 各种常量
 """
 import os
-from sql.model import Wx, Restaurant, History, UserInfo, Food
+from sql.model import Wx, Restaurant, History, UserInfo, Food, Market
 
 PA = '爬'
 
@@ -44,7 +44,8 @@ SQL_DICT = {
     'restaurant': Restaurant,
     'history': History,
     'user_info': UserInfo,
-    'food': Food
+    'food': Food,
+    'market': Market
 }
 
 GO_WEIGHT = 5

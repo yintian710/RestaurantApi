@@ -26,7 +26,7 @@ class dBase:
             return attr
         return tuple(getattr(self, _) for _ in args)
 
-    def __init__(self, **kwargs):
+    def set(self, **kwargs):
         if kwargs:
             for k, v in kwargs.items():
                 setattr(self, k, v)
@@ -82,6 +82,16 @@ class History(Base, dBase, Map):
     food = Column(TEXT)
     food_id = Column(BIGINT)
     last_time = Column(BIGINT)
+
+
+class Market(Base, dBase, Map):
+    __tablename__ = 'market'
+    id = Column(BIGINT, primary_key=True, autoincrement=True)
+    user_id = Column(VARCHAR(255))
+    foods = Column(TEXT)
+    name = Column(TEXT)
+    last_time = Column(BIGINT)
+    active = Column(BOOLEAN)
 
 
 if __name__ == '__main__':

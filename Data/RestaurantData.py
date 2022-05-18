@@ -40,5 +40,13 @@ class OneData(UserData):
     id: int = 0
 
 
+class NewMarketData(OneData):
+    name: str = ''
+
+
+class SearchData(UserData):
+    key: str = ''
+
+
 if __name__ == '__main__':
     pass

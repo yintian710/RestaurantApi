@@ -9,114 +9,16 @@ import json
 import random
 import time
 
-from Data.RestaurantData import NewFoodsData, NewFoodData, OneData, RestaurantNameData, NewRestaurantData
+from Data.RestaurantData import NewFoodsData, OneData, RestaurantNameData, NewRestaurantData
 from Data.userData import UserData
+from component.common import get_user_this, get_user_restaurant_for_restaurant_id, get_user_all_restaurants, \
+    get_user_all_restaurant_id, change_user_this, change_user_restaurant_name, get_go, get_foods_for_user_id, \
+    get_foods_for_restaurant_id, get_user_history_for_ten, change_food_weight, get_random_food_id, change_go, \
+    get_food_for_id, save_history
 from sql import employ
-from tool.CONTANT import SQL_DICT, NEXT_WEIGHT, GO_WEIGHT
+from tool.CONTANT import NEXT_WEIGHT, GO_WEIGHT
 
-from tool.common import is_regis, get_return, get_random_value_dict_for_dict_weight
-
-
-def get_user_this(user_id):
-    res = employ.select_user_info(user_id, 'this')
-    return res[0]
-
-
-def change_user_this(user_id, this):
-    employ.update_user_info(user_id, this=this)
-
-
-def change_food_weight(user_id, food, weight):
-    food_id = food['id']
-    weight = food['weight'] + weight
-    employ.update_food(user_id, food_id, weight=weight)
-
-
-def get_go(user_id):
-    res = employ.select_user_info(user_id, 'go')
-    return res[0]
-
-
-def change_go(user_id, go):
-    employ.update_user_info(user_id, go=go)
-
-
-def get_user_history(user_id):
-    res = employ.select_history(user_id, '*')
-    if not res:
-        return []
-    res.sort(key=lambda x: x['last_time'], reverse=True)
-    return res
-
-
-def get_user_history_for_ten(user_id):
-    return get_user_history(user_id)[:10]
-
-
-def save_history(user_id, restaurant_id, food, food_id):
-    employ.insert_history(user_id, restaurant_id, food, food_id)
-
-
-def get_foods_for_restaurant_id(restaurant_id):
-    res = employ.select_restaurant_foods(restaurant_id, '*', active=True)
-    return res
-
-
-def get_foods_for_user_id(restaurant_id):
-    res = employ.select_user_foods(restaurant_id, '*', active=True)
-    return res
-
-
-def get_food_for_id(food_id):
-    res = employ.select_food(food_id, '*')
-    if not res:
-        return None
-    return res
-
-
-def get_user_restaurant_for_restaurant_id(user_id, restaurant_id):
-    res = employ.select_restaurant(user_id, '*', restaurant_id=restaurant_id)
-    if not res:
-        return res
-    result = res[0]
-    result['foods'] = get_foods_for_restaurant_id(restaurant_id)
-    return result
-
-
-def get_user_all_restaurants(user_id):
-    """
-    获取所有数据
-    :param user_id:
-    :return:
-    """
-    res = employ.select_restaurant(user_id, '*')
-    for _ in res:
-        _['foods'] = get_foods_for_restaurant_id(_['id'])
-    return res
-
-
-def get_user_all_restaurant_id(user_id):
-    res = employ.select_restaurant(user_id, 'id')
-    if res:
-        res = [_[0] for _ in res]
-    return res
-
-
-def change_user_restaurant_name(user_id, restaurant_id, name):
-    employ.update_restaurant(user_id, restaurant_id, name=name)
-
-
-def get_random_food_id(foods: list, ignore=None) -> str:
-    """
-    获取随机产生的食物
-    :param foods: 食府中的食物数据
-    :param ignore: 需要被忽略的一个食物，往往是已经去了两次的
-    :return:
-    """
-    food = foods.copy()
-    random_dict = get_random_value_dict_for_dict_weight(food, value='id', weight='weight', ignore=ignore)
-    random_food = random.choices(random_dict['value'], weights=random_dict['weight'])
-    return random_food[0]
+from tool.common import is_regis, get_return
 
 
 @is_regis
@@ -235,22 +137,9 @@ def go_food(data: UserData):
     return get_return(f'你选择了{food_name}， 冲鸭！', food=food)
 
 
-@is_regis
-def get_history(data: UserData):
-    user_id = data.user_id
-    history = get_user_history(user_id)
-    return get_return(f'获取成功', history=history)
-
-
-@is_regis
-def get_ten_history(data: UserData):
-    user_id = data.user_id
-    history = get_user_history_for_ten(user_id)
-    return get_return(f'获取成功', history=history)
-
-
 if __name__ == '__main__':
     res_ = get_user_all_restaurant_id('string')
     # res_ = next_food(UserData(user_id='string'))
     # res_ = change_this(OneData(user_id='string', id=11))
+    # update_market_for_restaurant_id(NewMarketData(user_id='string', id=11, name=''))
     print(res_)

@@ -11,9 +11,7 @@ from fastapi import APIRouter
 from Data.RestaurantData import NewRestaurantData, NewFoodsData, OneData, RestaurantNameData
 from Data.userData import UserData
 from component.restaurant import new_restaurant, get_one_restaurant, \
-    get_all_restaurants, new_foods, change_this, change_restaurant_name, get_this, next_food, go_food, get_history, \
-    get_ten_history
-
+    get_all_restaurants, new_foods, change_this, change_restaurant_name, get_this, next_food, go_food
 restaurants = APIRouter(
     prefix="/restaurants",
     tags=["restaurants"],
@@ -74,19 +72,6 @@ async def next_(data: UserData):
 async def go_(data: UserData):
     result = go_food(data)
     return result
-
-
-@restaurants.post('/getHistory')
-async def get_history_(data: UserData):
-    result = get_history(data)
-    return result
-
-
-@restaurants.post('/getTenHistory')
-async def get_ten_history_(data: UserData):
-    result = get_ten_history(data)
-    return result
-
 
 if __name__ == '__main__':
     pass

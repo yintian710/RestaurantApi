@@ -6,11 +6,56 @@
 @file: employ.py
 @Desc
 """
+from re import findall
 from time import time
 
+from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
+
 from app.dependencies import get_db
-from sql.model import Food, Restaurant, History
+from sql.model import Food, Restaurant, History, Market
 from tool.CONTANT import SQL_DICT
+from tool.Error import SqlColumnError
+
+
+def select_market(*args, **kwargs):
+    like = kwargs.get('like', {})
+    active = kwargs.get('active', None)
+    _id = kwargs.get('id', None)
+    db = get_db()
+    base = Market
+    res = db.query(base)
+    if active:
+        res = res.filter(base.active == active)
+    if _id:
+        res = res.filter(base.id == _id)
+    if like:
+        res = res.filter(base.name.like(f'%{like}%'))
+    if not res:
+        return None
+    result = [_.get(*args) for _ in res]
+    db.close()
+    return result
+
+
+def insert_market(user_id, name, foods, **kwargs):
+    kwargs['user_id'] = user_id
+    kwargs['name'] = name
+    kwargs['foods'] = foods
+    kwargs.setdefault('active', False)
+    kwargs.setdefault('last_time', time())
+    market_id = insert_base_id('market', **kwargs)
+    return market_id
+
+
+def update_market(market_id, **kwargs):
+    kwargs['last_time'] = time()
+    update_base_id('market', market_id, **kwargs)
+
+
+# def select_market(market_id, **kwargs):
+#     res = select_base_id('market', market_id, '*', **kwargs)
+#     return res
 
 
 def select_history(user_id, *args):
@@ -227,9 +272,10 @@ def update_food(user_id, food_id, **kwargs):
     :param kwargs: 需要更改的数据dict,{需要更改的字段名:更改之后的值,...}
     :return:
     """
+    kwargs['last_time'] = time()
+    # update_base_id('food', food_id, **kwargs)
     db = get_db()
     base = Food
-    kwargs['last_time'] = time()
     db.query(base).filter(base.id == food_id).filter(base.user_id == user_id).update(kwargs)
     db.commit()
     db.close()
@@ -255,7 +301,9 @@ def insert_food(user_id, food, restaurant_id, address=''):
     base.active = True
     db.add(base)
     db.commit()
-    return base.id
+    base_id = base.id
+    db.close()
+    return base_id
 
 
 def select_id_in_wx(openid):
@@ -270,9 +318,10 @@ def select_id_in_wx(openid):
     return result
 
 
-def insert_base(base_name: str, user_id: int):
+def insert_base(base_name: str, user_id: int, **kwargs):
     db = get_db()
     base = SQL_DICT[base_name]()
+    base.set(**kwargs)
     base.user_id = user_id
     db.add(base)
     db.commit()
@@ -306,5 +355,70 @@ def delete_base(base_name: str, user_id: int):
     db.close()
 
 
+def insert_base_id(base_name: str, **kwargs):
+    db = get_db()
+    base = SQL_DICT[base_name]()
+    base.set(**kwargs)
+    db.add(base)
+    db.commit()
+    base_id = base.id
+    db.close()
+    return base_id
+
+
+def select_base_id(base_name: str, _id: int, *args, **kwargs):
+    db = get_db()
+    base = SQL_DICT[base_name]
+    result = db.query(base).filter(base.id == _id).first()
+    if not result:
+        return None
+    result = result.get(*args)
+    db.close()
+    return result
+
+
+def update_base_id(base_name: str, _id: int, **kwargs):
+    db = get_db()
+    base = SQL_DICT[base_name]
+    db.query(base).filter(base.id == _id).update(kwargs)
+    db.commit()
+    db.close()
+
+
+def delete_base_id(base_name: str, _id: int):
+    db = get_db()
+    base = SQL_DICT[base_name]
+    db.query(base).filter(base.id == _id).delete()
+    db.commit()
+    db.close()
+
+
+def select_base_any(base_name, *args, **kwargs):
+    try:
+        sql_list = []
+        for k, v in kwargs.items():
+            if isinstance(v, bool):
+                sql_list.append(f'{k}={int(v)}')
+            elif isinstance(v, int):
+                sql_list.append(f'{k}={v}')
+            elif isinstance(v, str):
+                sql_list.append(f"{k}='{v}'")
+        sql = ' and '.join(sql_list)
+        print(sql)
+        db = get_db()
+        base = SQL_DICT[base_name]
+        res = db.query(base).filter(text(sql)).all()
+        if not res:
+            return None
+        result = [_.get(*args) for _ in res]
+        db.close()
+        return result
+    except OperationalError as e:
+        column = findall("column \'(.*?)\' ", str(e))[0]
+        raise SqlColumnError(column)
+
+
 if __name__ == '__main__':
-    pass
+    # res_ = select_base_any('food', 'name', 'id', user_id='string', active=True, name='米饭')
+    res_ = select_market('*', like='1')
+    print(res_)
