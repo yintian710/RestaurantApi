@@ -32,7 +32,7 @@ class NewFoodData(BaseModel):
 
 
 class NewFoodsData(UserData):
-    restaurant_id: int
+    restaurant_id: int = 0
     food_list: List[NewFoodData]
 
 

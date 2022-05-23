@@ -6,14 +6,11 @@
 @Desc  : 
 """
 import json
-from random import randint
 
 import aiohttp
 
-from sql.employ import select_wx, update_wx, insert_wx, select_id_in_wx, select_base, insert_base, update_restaurant
-from tool.CONTANT import pa
+from sql.employ import select_id_in_wx, select_base, insert_base
 from tool.common import get_return
-from tool.common import is_regis
 from tool.util import log_print
 
 

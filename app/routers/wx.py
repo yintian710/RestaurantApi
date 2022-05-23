@@ -21,12 +21,22 @@ wx = APIRouter(
 
 @wx.post('/getOpenId')
 async def get_open_id_(params: dict):
+    """
+    获取用户openid
+    :param params:
+    :return:
+    """
     result = await get_login_openid(params)
     return result
 
 
 @wx.post('/isWxRegis')
 async def is_wx_regis_(data: isWxRegisData):
+    """
+    验证用户是否登录,未注册则自动注册,传入用户openid
+    :param data:
+    :return:
+    """
     result = is_wx_regis(data.user_id)
     return result
 

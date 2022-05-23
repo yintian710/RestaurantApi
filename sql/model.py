@@ -7,8 +7,8 @@
 @Desc
 """
 
-from sqlalchemy import Column, BIGINT, INT, VARCHAR, DATETIME, TEXT, BOOLEAN
-from sqlalchemy.orm import DeclarativeMeta, registry
+from sqlalchemy import Column, BIGINT, VARCHAR, TEXT, BOOLEAN
+from sqlalchemy.orm import registry
 
 from sql.config import Base
 
@@ -37,6 +37,7 @@ class Wx(Base, dBase, Map):
 
     id = Column(BIGINT, primary_key=True, autoincrement=True)
     user_id = Column(VARCHAR(255), primary_key=True)
+    # open_id = Column(VARCHAR(255), primary_key=True)
     last_time = Column(BIGINT)
 
 

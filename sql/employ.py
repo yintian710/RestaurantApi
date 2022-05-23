@@ -331,10 +331,10 @@ def insert_base(base_name: str, user_id: int, **kwargs):
 def select_base(base_name: str, user_id: int, *args):
     db = get_db()
     base = SQL_DICT[base_name]
-    result = db.query(base).filter(base.user_id == user_id).first()
+    result = db.query(base).filter(base.user_id == user_id)
     if not result:
         return None
-    result = result.get(*args)
+    result = [_.get(*args) for _ in result][0]
     db.close()
     return result
 
@@ -367,12 +367,13 @@ def insert_base_id(base_name: str, **kwargs):
 
 
 def select_base_id(base_name: str, _id: int, *args, **kwargs):
+    kwargs.get('user_id', '')
     db = get_db()
     base = SQL_DICT[base_name]
-    result = db.query(base).filter(base.id == _id).first()
+    result = db.query(base).filter(base.id == _id)
     if not result:
         return None
-    result = result.get(*args)
+    result = [_.get(*args) for _ in result][0]
     db.close()
     return result
 

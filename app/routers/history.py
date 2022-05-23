@@ -13,12 +13,22 @@ history = APIRouter(
 
 @history.post('/getHistory')
 async def get_history_(data: UserData):
+    """
+    获取用户历史选择记录,传入用户open_id
+    :param data:
+    :return:
+    """
     result = get_history(data)
     return result
 
 
 @history.post('/getTenHistory')
 async def get_ten_history_(data: UserData):
+    """
+    获取用户历史前十个选择记录,传入用户open_id
+    :param data:
+    :return:
+    """
     result = get_ten_history(data)
     return result
 

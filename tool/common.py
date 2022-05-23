@@ -92,9 +92,9 @@ def str_to_python_code(_str1):
         write = '\nwith open("str.txt", "w", encoding="utf-8"' + ') as f:\n f.write(str(str1))'
         exec(_str1 + write)
         with open("str.txt", "r", encoding="utf-8") as f:
-            str1 = f.read()
+            str2 = f.read()
         # os.remove("str.txt")
-        return str1
+        return str2
     except Exception as e:
         return e
 
