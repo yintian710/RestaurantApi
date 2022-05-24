@@ -334,9 +334,11 @@ def select_base(base_name: str, user_id: int, *args):
     result = db.query(base).filter(base.user_id == user_id)
     if not result:
         return None
-    result = [_.get(*args) for _ in result][0]
+    result = [_.get(*args) for _ in result]
+    if not result:
+        return None
     db.close()
-    return result
+    return result[0]
 
 
 def update_base(base_name: str, user_id: int, **kwargs):
@@ -373,9 +375,11 @@ def select_base_id(base_name: str, _id: int, *args, **kwargs):
     result = db.query(base).filter(base.id == _id)
     if not result:
         return None
-    result = [_.get(*args) for _ in result][0]
+    result = [_.get(*args) for _ in result]
     db.close()
-    return result
+    if not result:
+        return None
+    return result[0]
 
 
 def update_base_id(base_name: str, _id: int, **kwargs):
