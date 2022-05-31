@@ -44,13 +44,16 @@ def is_regis(func):
         :param kwargs:
         :return:
         """
-        if isinstance(user_id, str):
-            key = user_id
-        else:
-            key = user_id.user_id
-        if not select_wx(key, 'user_id'):
-            return get_return('您还没有注册，请先注册', code=1)
-        return func(user_id, *args, **kwargs)
+        try:
+            if isinstance(user_id, str):
+                key = user_id
+            else:
+                key = user_id.user_id
+            if not select_wx(key, 'user_id'):
+                return get_return('您还没有注册，请先注册', code=1)
+            return func(user_id, *args, **kwargs)
+        except Exception as e:
+            return get_return(f'系统发生了错误，类型为：{type(e)}, {e}', code=1)
 
     return inner
 

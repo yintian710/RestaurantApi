@@ -12,7 +12,7 @@ from Data.userData import UserData
 from component.common import get_user_this, get_user_restaurant_for_restaurant_id, get_user_all_restaurants, \
     get_user_all_restaurant_id, change_user_this, change_user_restaurant_name, get_go, get_foods_for_user_id, \
     get_foods_for_restaurant_id, get_user_history_for_ten, change_food_weight, get_random_food_id, change_go, \
-    get_food_for_id, save_history
+    get_food_for_id, save_history, change_restaurant_active, change_food_active
 from sql import employ
 from tool.CONTANT import NEXT_WEIGHT, GO_WEIGHT
 
@@ -133,6 +133,32 @@ def go_food(data: UserData):
     change_go(user_id, 0)
     save_history(user_id, this, food_name, go)
     return get_return(f'你选择了{food_name}， 冲鸭！', food=food)
+
+
+@is_regis
+def delete_restaurant(data: OneData):
+    user_id = data.user_id
+    restaurant_id = data.id
+    this = get_user_this(user_id)
+    if this == restaurant_id:
+        return get_return(f'不可删除当前选中食府', code=1)
+    restaurant = get_user_restaurant_for_restaurant_id(user_id, restaurant_id)
+    if not restaurant:
+        return get_return(f'请输入正确的食府id', code=1)
+    change_restaurant_active(restaurant_id)
+    return get_return(f'成功删除食府{restaurant["name"]}', restaurant=restaurant)
+
+
+@is_regis
+def delete_food(data: OneData):
+    user_id = data.user_id
+    food_id = data.id
+    foods = get_foods_for_user_id(user_id)
+    food = next(filter(lambda x: x['id'] == food_id, foods))
+    if not food:
+        return get_return(f'请输入正确的食物id', code=1)
+    change_food_active(food_id)
+    return get_return(f'成功删除食物{food["name"]}', food=food)
 
 
 if __name__ == '__main__':

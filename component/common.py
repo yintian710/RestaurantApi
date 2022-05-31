@@ -85,8 +85,8 @@ def get_foods_for_restaurant_id(restaurant_id):
     return res
 
 
-def get_foods_for_user_id(restaurant_id):
-    res = employ.select_user_foods(restaurant_id, '*', active=True)
+def get_foods_for_user_id(user_id):
+    res = employ.select_user_foods(user_id, '*', active=True)
     return res
 
 
@@ -98,7 +98,7 @@ def get_food_for_id(food_id):
 
 
 def get_user_restaurant_for_restaurant_id(user_id, restaurant_id):
-    res = employ.select_restaurant(user_id, '*', restaurant_id=restaurant_id)
+    res = employ.select_restaurant(user_id, '*', restaurant_id=restaurant_id, active=True)
     if not res:
         return res
     result = res[0]
@@ -112,7 +112,7 @@ def get_user_all_restaurants(user_id):
     :param user_id:
     :return:
     """
-    res = employ.select_restaurant(user_id, '*')
+    res = employ.select_restaurant(user_id, '*', active=True)
     for _ in res:
         _['foods'] = get_foods_for_restaurant_id(_['id'])
     return res
@@ -140,6 +140,18 @@ def get_random_food_id(foods: list, ignore=None) -> str:
     random_dict = get_random_value_dict_for_dict_weight(food, value='id', weight='weight', ignore=ignore)
     random_food = choices(random_dict['value'], weights=random_dict['weight'])
     return random_food[0]
+
+
+def change_active_for_id(mode, _id, active=False):
+    employ.update_base_id(mode, _id=_id, active=active)
+
+
+def change_restaurant_active(restaurant_id, active=False):
+    change_active_for_id('restaurant', restaurant_id, active=active)
+
+
+def change_food_active(_id, active=False):
+    change_active_for_id('food', _id, active=active)
 
 
 if __name__ == '__main__':

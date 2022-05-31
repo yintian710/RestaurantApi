@@ -11,7 +11,9 @@ from fastapi import APIRouter
 from Data.RestaurantData import NewRestaurantData, NewFoodsData, OneData, RestaurantNameData
 from Data.userData import UserData
 from component.restaurant import new_restaurant, get_one_restaurant, \
-    get_all_restaurants, new_foods, change_this, change_restaurant_name, get_this, next_food, go_food
+    get_all_restaurants, new_foods, change_this, change_restaurant_name, get_this, next_food, go_food, \
+    delete_restaurant, delete_food
+
 restaurants = APIRouter(
     prefix="/restaurants",
     tags=["restaurants"],
@@ -117,6 +119,29 @@ async def go_(data: UserData):
     """
     result = go_food(data)
     return result
+
+
+@restaurants.post('/Delete')
+async def delete_restaurant_(data: OneData):
+    """
+    删除用户食府，传入用户openid，食府id
+    :param data:
+    :return:
+    """
+    result = delete_restaurant(data)
+    return result
+
+
+@restaurants.post('/DeleteFood')
+async def delete_food_(data: OneData):
+    """
+    删除用户食物，传入用户openid，食物id
+    :param data:
+    :return:
+    """
+    result = delete_food(data)
+    return result
+
 
 if __name__ == '__main__':
     pass
